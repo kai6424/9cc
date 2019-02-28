@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
       i++;
       if (tokens[i].ty != TK_NUM)
         error(i);
-      printf("  add rax, %ld\n", tokens[i].val);
+      printf("  add rax, %d\n", tokens[i].val);
       i++;
       continue;
     }
@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
       i++;
       if (tokens[i].ty != TK_NUM)
         error(i);
-      printf("  sub rax, %ld\n", tokens[i].val);
+      printf("  sub rax, %d\n", tokens[i].val);
       i++;
       continue;
     }
