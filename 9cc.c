@@ -83,7 +83,7 @@ void tokenize(char *p) {
       continue;
     }
 
-    if (*p == '+' || *p == '-' || *p == '*' || *p == '(' || *p == ')') {
+    if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' || *p == ')') {
       tokens[i].ty = *p;
       tokens[i].input = p;
       i++;
@@ -146,13 +146,15 @@ Node *add() {
   }
 }
 
-// 乗算ノードを生成する
+// 乗除算ノードを生成する
 Node *mul() {
   Node *node = term();
 
   for (;;) {
     if (consume('*'))
       node = new_node('*', node, term());
+    else if (consume('/'))
+      node = new_node('/', node, term());
     else
       return node;
   }
@@ -196,6 +198,9 @@ void gen(Node *node) {
     case '*':
       printf("  mul rdi\n");
       break;
+    case '/':
+      printf("  mov rdx, 0\n");
+      printf("  div rdi\n");
   }
 
   printf("  push rax\n");
