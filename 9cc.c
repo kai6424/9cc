@@ -41,6 +41,7 @@ Node *new_node(int, Node *, Node *);
 Node *new_node_num(int);
 int consume(int);
 Node *add();
+Node *mul();
 Node *term();
 void gen(Node *);
 void error(int);
@@ -82,7 +83,7 @@ void tokenize(char *p) {
       continue;
     }
 
-    if (*p == '+' || *p == '-') {
+    if (*p == '+' || *p == '-' || *p == '*') {
       tokens[i].ty = *p;
       tokens[i].input = p;
       i++;
@@ -133,13 +134,25 @@ int consume(int ty) {
 
 // 加減算ノードを生成する
 Node *add() {
-  Node *node = term();
+  Node *node = mul();
 
   for (;;) {
     if (consume('+'))
-      node = new_node('+', node, term());
+      node = new_node('+', node, mul());
     else if (consume('-'))
-      node = new_node('-', node, term());
+      node = new_node('-', node, mul());
+    else
+      return node;
+  }
+}
+
+// 乗算ノードを生成する
+Node *mul() {
+  Node *node = term();
+
+  for (;;) {
+    if (consume('*'))
+      node = new_node('*', node, term());
     else
       return node;
   }
@@ -172,6 +185,9 @@ void gen(Node *node) {
       break;
     case '-':
       printf("  sub rax, rdi\n");
+      break;
+    case '*':
+      printf("  mul rdi\n");
       break;
   }
 
