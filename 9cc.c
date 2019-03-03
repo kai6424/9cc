@@ -29,6 +29,13 @@ typedef struct Node {
   int val;          // tyがND_NUMの場合のみ使う
 } Node;
 
+// ベクタの型
+typedef struct {
+  void **data;  // データの本体
+  int capacity; // バッファの大きさ
+  int len;      // 追加済み要素の数
+} Vector;
+
 // トークナイズした結果のトークン列はこの配列に保存する
 // 100個以上のトークンは来ないものとする
 Token tokens[100];
@@ -39,6 +46,8 @@ int pos = 0;
 void tokenize(char *);
 Node *new_node(int, Node *, Node *);
 Node *new_node_num(int);
+Vector *new_vector();
+Vector vec_push(Vector *, void *);
 int consume(int);
 Node *add();
 Node *mul();
@@ -122,6 +131,24 @@ Node *new_node_num(int val) {
   node->ty = ND_NUM;
   node->val = val;
   return node;
+}
+
+// 新しいベクタを生成する
+Vector *new_vector() {
+  Vector *vec = malloc(sizeof(Vector));
+  vec->data = malloc(sizeof(void *) * 16);
+  vec->capacity = 16;
+  vec->len = 0;
+  return vec;
+}
+
+// ベクタに要素を追加する
+Vector vec_push(Vector *vec, void *elem) {
+  if (vec->capacity == vec->len) {
+    vec->capacity *= 2;
+    vec->data = realloc(vec->data, sizeof(void *) * vec->capacity);
+  }
+  vec->data[vec->len++] = elem;
 }
 
 // トークンを1つ読み込む
