@@ -55,11 +55,19 @@ Node *term();
 void gen(Node *);
 void error(int);
 void error_with_message(char *, char *);
+int expect(int, int, int);
+void runtest();
 
 int main(int argc, char **argv) {
   if (argc != 2) {
     fprintf(stderr, "引数の個数が正しくありません\n");
     return 1;
+  }
+
+  // testオプションの場合、テストコードを実行
+  if (strcmp(argv[1], "-test") == 0) {
+    runtest();
+    return 0;
   }
 
   // トークナイズしてパースする
@@ -243,4 +251,28 @@ void error(int i) {
 void error_with_message(char *str1, char *str2) {
   fprintf(stderr, str1, str2);
   exit(1);
+}
+
+// 値を比較するための関数
+int expect(int line, int expected, int actual) {
+  if (expected == actual)
+    return 0;
+  fprintf(stderr, "%d: %d expected, but got %d\n", line, expected, actual);
+  exit(1);
+}
+
+// ベクタ関数をテストするための関数
+void runtest() {
+  Vector *vec = new_vector();
+  expect(__LINE__, 0, vec->len);
+
+  for (int i = 0; i < 100; i++)
+    vec_push(vec, (void *)i);
+
+  expect(__LINE__, 100, vec->len);
+  expect(__LINE__, 0, (int)vec->data[0]);
+  expect(__LINE__, 50, (int)vec->data[50]);
+  expect(__LINE__, 99, (int)vec->data[99]);
+
+  printf("OK\n");
 }
